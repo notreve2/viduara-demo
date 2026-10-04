@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Viduara">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>Viduara — PWA Demo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#070b14;color:#f8fafc}.app{min-height:100vh;display:grid;grid-template-rows:auto 1fr auto}.top{padding:14px 16px;border-bottom:1px solid #1e293b;background:#0b1020;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:5}.brand{font-weight:800;font-size:20px;letter-spacing:.3px}.badge{font-size:11px;padding:5px 8px;background:#172036;border-radius:999px;color:#93c5fd}.grow{flex:1}button,.btn{border:0;border-radius:12px;padding:11px 14px;background:#2563eb;color:white;font-weight:700;font-size:14px}button.secondary{background:#182235;color:#e2e8f0}button.green{background:#059669}button:disabled{opacity:.45}.main{display:grid;grid-template-columns:240px 1fr 300px;min-height:0}.panel{border-right:1px solid #1e293b;background:#0d1321;padding:14px;overflow:auto}.panel.right{border-left:1px solid #1e293b;border-right:0}.section{margin-bottom:18px}.section h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin:0 0 8px}.card{background:#111827;border:1px solid #1f2937;border-radius:14px;padding:12px;margin-bottom:10px}.workspace{display:flex;flex-direction:column;min-width:0}.canvas{flex:1;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at center,#151d30,#090e19 65%)}.stage{width:min(78vw,840px);aspect-ratio:16/9;background:#000;border:1px solid #26334a;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 18px 60px rgba(0,0,0,.4)}video,img.preview{width:100%;height:100%;object-fit:contain;background:#000}.placeholder{position:absolute;inset:0;display:grid;place-items:center;color:#64748b;text-align:center;padding:24px}.timeline{height:150px;border-top:1px solid #1e293b;background:#0b1020;padding:12px;overflow:auto}.track{height:40px;background:#172036;border-radius:10px;margin:7px 0;display:flex;align-items:center;padding:0 10px;color:#cbd5e1;font-size:12px}.clip{background:#2563eb;padding:8px 12px;border-radius:8px;max-width:75%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.field{width:100%;background:#070b14;color:#fff;border:1px solid #26334a;border-radius:10px;padding:10px 11px;margin:6px 0;min-height:42px}.plan{font-size:12px;line-height:1.5;color:#cbd5e1}.plan div{padding:7px 8px;background:#0b1020;border-radius:8px;margin-top:6px;border-left:3px solid #2563eb}.hint{font-size:11px;color:#94a3b8;line-height:1.45}.installSheet{position:fixed;inset:auto 12px 12px 12px;background:#111827;border:1px solid #334155;border-radius:18px;padding:14px;z-index:20;box-shadow:0 20px 60px rgba(0,0,0,.45);display:none}.installSheet.show{display:block}.bottom{padding:9px 14px;border-top:1px solid #1e293b;background:#0b1020;color:#64748b;font-size:11px;display:flex;justify-content:space-between}.status{color:#86efac}@media(max-width:900px){.main{grid-template-columns:1fr}.panel{display:none}.panel.right{display:block;border-left:0;border-top:1px solid #1e293b;max-height:330px}.canvas{padding:8px}.stage{width:100%;border-radius:10px}.timeline{height:130px}.top{flex-wrap:wrap}.brand{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand">VIDUARA</div><span class="badge">PWA Demo</span>
+  <div class="grow"></div>
+  <button id="installBtn" class="secondary">Instalar app</button>
+  <label class="btn" for="mediaInput">Importar mídia</label>
+  <input id="mediaInput" type="file" accept="video/*,image/*" hidden>
+</header>
+<div class="main">
+  <aside class="panel">
+    <div class="section"><h3>Editor</h3>
+      <div class="card"><b>Timeline multiclipe</b><div class="hint">Split, velocidade, textos, PIP, keyframes, máscaras, chroma e transições estão na build nativa.</div></div>
+      <div class="card"><b>Diretor por Texto</b><div class="hint">Transforma instruções em um plano de edição com movimento, zoom, tracking, blur e efeitos.</div></div>
+      <div class="card"><b>Melhorar Foto 1‑Tap</b><div class="hint">A versão PWA aplica contraste, nitidez e upscale local para teste.</div></div>
+    </div>
+  </aside>
+  <section class="workspace">
+    <div class="canvas">
+      <div class="stage" id="stage">
+        <div class="placeholder" id="placeholder"><div><b>Importe um vídeo ou foto</b><br>Depois teste o Diretor por Texto ou Melhorar Foto.</div></div>
+        <video id="video" controls playsinline style="display:none"></video>
+        <img id="image" class="preview" alt="" style="display:none">
+        <canvas id="workCanvas" style="display:none"></canvas>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="track"><span style="width:80px">VÍDEO</span><div class="clip" id="clipLabel">Nenhuma mídia</div></div>
+      <div class="track"><span style="width:80px">TEXTO</span><span>Comandos do Diretor aparecem aqui como plano.</span></div>
+      <div class="track"><span style="width:80px">ÁUDIO</span><span>Disponível na build completa.</span></div>
+    </div>
+  </section>
+  <aside class="panel right">
+    <div class="section">
+      <h3>Diretor por Texto</h3>
+      <textarea id="prompt" class="field" rows="5" placeholder="Ex.: recorte a pessoa, faça ela voar até o canto superior direito, dê zoom cinematográfico, motion blur e acompanhe com a câmera"></textarea>
+      <button id="runDirector">Criar plano</button>
+      <div class="plan" id="plan"></div>
+    </div>
+    <div class="section">
+      <h3>Foto</h3>
+      <button id="enhance" class="green">Melhorar Foto 1‑Tap</button>
+      <button id="downloadEnhanced" class="secondary" style="margin-top:8px;display:none">Salvar resultado</button>
+      <div class="hint" style="margin-top:8px">Processamento local nesta PWA: contraste automático, nitidez e upscale 2× com limite de segurança.</div>
+    </div>
+    <div class="section"><h3>Status</h3><div class="card"><div class="status" id="status">Pronto para teste</div><div class="hint">O demo público não contém chaves privadas nem o backend comercial.</div></div></div>
+  </aside>
+</div>
+<footer class="bottom"><span>Viduara 1.5.1 PWA</span><span>Demo público — código nativo e backend permanecem privados</span></footer>
+</div>
+<div class="installSheet" id="iosSheet">
+  <b>Instalar no iPhone</b>
+  <div class="hint" style="margin:6px 0 10px">Abra este link no Safari → toque em Compartilhar → “Adicionar à Tela de Início” → confirme “Adicionar”.</div>
+  <button class="secondary" onclick="document.getElementById('iosSheet').classList.remove('show')">Entendi</button>
+</div>
+<script>
+let deferredPrompt=null,currentFile=null,currentUrl=null,currentType=null,enhancedBlob=null;
+const $=id=>document.getElementById(id);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').textContent='Instalar Viduara'});
+$('installBtn').onclick=async()=>{
+  const isiOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(isiOS){$('iosSheet').classList.add('show');return}
+  if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}
+  else alert('No Android, abra o menu do Chrome e escolha “Instalar app” ou “Adicionar à tela inicial”.');
+};
+$('mediaInput').onchange=e=>{
+  const f=e.target.files[0]; if(!f)return;
+  currentFile=f; currentType=f.type; enhancedBlob=null;
+  if(currentUrl)URL.revokeObjectURL(currentUrl); currentUrl=URL.createObjectURL(f);
+  $('placeholder').style.display='none'; $('video').style.display='none'; $('image').style.display='none';
+  if(f.type.startsWith('video/')){$('video').src=currentUrl;$('video').style.display='block'}
+  else if(f.type.startsWith('image/')){$('image').src=currentUrl;$('image').style.display='block'}
+  $('clipLabel').textContent=f.name; $('status').textContent='Mídia importada';
+};
+function directorPlan(text){
+  const t=text.toLowerCase(),ops=[];
+  if(/recorte|remova o fundo|sem fundo/.test(t))ops.push('1. Segmentar pessoa / criar máscara de primeiro plano');
+  if(/voar|voe|suba|mova|canto|direita|esquerda/.test(t))ops.push('2. Criar keyframes X/Y para trajetória do sujeito');
+  if(/zoom|aproxim/.test(t))ops.push('3. Animar escala com easing cinematográfico');
+  if(/câmera|camera|acompanhe|tracking|rastre/.test(t))ops.push('4. Aplicar motion tracking e compensação de câmera');
+  if(/blur|desfoque|motion/.test(t))ops.push('5. Adicionar motion blur proporcional à velocidade');
+  if(/sombra/.test(t))ops.push('6. Gerar sombra projetada e ajustar opacidade/posição');
+  if(/lenta|slow/.test(t))ops.push('7. Reduzir velocidade do trecho e interpolar movimento');
+  if(/estabil/.test(t))ops.push('8. Aplicar estabilização antes dos efeitos');
+  if(!ops.length)ops.push('1. Interpretar instrução','2. Selecionar sujeito/clipe','3. Gerar keyframes e efeitos','4. Pré-visualizar e permitir ajustes');
+  return ops;
+}
+$('runDirector').onclick=()=>{
+  const q=$('prompt').value.trim(); if(!q){$('prompt').focus();return}
+  const ops=directorPlan(q); $('plan').innerHTML=ops.map(x=>'<div>'+x+'</div>').join('');
+  $('status').textContent='Plano de edição criado';
+};
+$('enhance').onclick=async()=>{
+  if(!currentFile||!currentType.startsWith('image/')){alert('Importe uma foto primeiro.');return}
+  $('status').textContent='Melhorando foto…';
+  const img=new Image(); img.src=currentUrl; await img.decode();
+  const maxDim=4096,scale=Math.min(2,maxDim/Math.max(img.width,img.height));
+  const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
+  const c=$('workCanvas'); c.width=w;c.height=h; const ctx=c.getContext('2d');
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.filter='contrast(1.08) saturate(1.05)';ctx.drawImage(img,0,0,w,h);ctx.filter='none';
+  const data=ctx.getImageData(0,0,w,h),d=data.data,copy=new Uint8ClampedArray(d);
+  for(let y=1;y<h-1;y+=1){for(let x=1;x<w-1;x+=1){const i=(y*w+x)*4;for(let k=0;k<3;k++){const center=copy[i+k]*1.35;const n=(copy[i-4+k]+copy[i+4+k]+copy[i-w*4+k]+copy[i+w*4+k])*.0875;d[i+k]=Math.max(0,Math.min(255,center-n));}}}
+  ctx.putImageData(data,0,0); enhancedBlob=await new Promise(r=>c.toBlob(r,'image/jpeg',.93));
+  if(currentUrl)URL.revokeObjectURL(currentUrl);currentUrl=URL.createObjectURL(enhancedBlob);$('image').src=currentUrl;
+  $('downloadEnhanced').style.display='inline-block';$('status').textContent='Foto melhorada localmente';
+};
+$('downloadEnhanced').onclick=()=>{if(!enhancedBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(enhancedBlob);a.download='viduara-enhanced.jpg';a.click()};
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+</script>
+</body></html>
